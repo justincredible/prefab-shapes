@@ -5,7 +5,8 @@ This library provides basic data for simple shapes.
 
 ## Example
 
-To run the example use:
+The example uses SDL2, so you may need to install it first.
+Afterwards, just run:
 ```
 cargo run -p example
 ```
