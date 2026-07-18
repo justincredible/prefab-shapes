@@ -11,6 +11,9 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/justincredible/prefab-shapes"
 keywords = ["graphics", "shapes"]
 edition = "2024"
+exclude = [
+	"pic"
+]
 
 [dependencies]
 num-traits = "0.2"
