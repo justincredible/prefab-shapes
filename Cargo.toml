@@ -2,10 +2,9 @@
 members = [".", "example"]
 
 [package]
-name = "shapes"
+name = "prefab-shapes"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 num-traits = "0.2"
-

@@ -5,11 +5,11 @@ use glow::*;
 use sdl2::image::LoadSurface;
 use sdl2::surface::Surface;
 
-use shapes::kepler_poinsot::KpPolyhedron;
-use shapes::polygon::Polygon;
-use shapes::platonic_solid::PlatonicSolid;
-use shapes::Shaper;
-use shapes::shapes::ShapingError;
+use prefab_shapes::kepler_poinsot::KpPolyhedron;
+use prefab_shapes::polygon::Polygon;
+use prefab_shapes::platonic_solid::PlatonicSolid;
+use prefab_shapes::Shaper;
+use prefab_shapes::shapes::ShapingError;
 
 mod egui_sdl2;
 use egui_sdl2::{process_event, run_ui};
@@ -335,7 +335,7 @@ struct Shape {
 }
 
 impl Shape {
-    pub fn new(gl: &glow::Context, shape: shapes::Shape<f32, u8>) -> Self {
+    pub fn new(gl: &glow::Context, shape: prefab_shapes::Shape<f32, u8>) -> Self {
        if shape.is_strips() {
             let vertices = create_vertex_buffer(gl, shape.vertices());
             let indices = if shape.indices().is_empty() {
