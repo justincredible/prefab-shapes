@@ -5,7 +5,7 @@ use num_traits::{cast, Float, FloatConst, NumCast, one, Unsigned, zero};
 use crate::shapes::{Configuration, Shape, Shaper, ShapingError};
 
 /// Regular polygons with less than 65536 sides.
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Polygon {
     sides: u16
 }
