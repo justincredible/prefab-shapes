@@ -1,7 +1,8 @@
 use std::ops::AddAssign;
 
-use num_traits::{cast, Float, FloatConst, NumCast, one, Unsigned, zero};
+use num_traits::{Float, FloatConst, NumCast, one, Unsigned, zero};
 
+use crate::prefab::polygonal::{Polygonal, PolygonalSides};
 use crate::shapes::{Configuration, Shape, Shaper, ShapingError};
 
 /// Regular polygons with less than 65536 sides.
@@ -23,70 +24,35 @@ impl Polygon {
     }
 }
 
+impl<C, I> Polygonal<C, I> for Polygon
+where
+    C: Float + FloatConst,
+    I: AddAssign + Copy + NumCast + Unsigned,
+{
+    fn sides(&self) -> PolygonalSides {
+        self.sides
+    }
+}
+
 impl<C, I> Shaper<C, I> for Polygon
 where
     C: Float + FloatConst,
     I: AddAssign + Copy + NumCast + Unsigned,
 {
     fn shape(&self, request: Configuration) -> Result<Shape<C, I>, ShapingError> {
-        let zero = zero();
-        let one: C = one();
-        let angle = <C as FloatConst>::TAU() / cast::<_, C>(self.sides).unwrap();
-        let half = cast::<_, C>(0.5).unwrap() * angle;
-        let radius = half.cos() / angle.sin();
-
-        let odd = !self.sides.is_multiple_of(2);
-        let mut vertices = if odd {
-            vec!([zero, radius, zero])
-        } else {
-            vec!()
-        };
-        let first = if odd && request.orientation.is_ccw() || !odd && request.orientation.is_cw() {
-            -one
-        } else {
-            one
-        };
-
-        for step in 0..self.sides/2 {
-            let value = if odd {
-                angle * cast::<_, C>(step+1).unwrap()
-            } else {
-                half + angle * cast::<_, C>(step).unwrap()
-            };
-            let mut point = [radius * first * value.sin(), radius * value.cos(), zero];
-            vertices.push(point);
-            point[0] = -point[0];
-            vertices.push(point);
-        }
+        let left_right = Polygonal::<C, I>::left_right_front_facing(self, request);
+        let vertices = Polygonal::<C, I>::vertices(self, left_right);
 
         if request.prefer_strips {
             Shape::as_strips(vertices, vec![])
         } else {
-            let mut indices = vec!();
-
-            let mut a: I = num_traits::zero();
-            let mut b: I = num_traits::one();
-            let mut c = cast::<_, I>(2).unwrap();
-            let inc = b;
-
-            for i in 0..self.sides-2 {
-                indices.push(a);
-                indices.push(b);
-                indices.push(c);
-
-                if i.is_multiple_of(2) {
-                    a = c;
-                } else {
-                    b = c;
-                }
-                c += inc;
-            }
+            let indices = Polygonal::<C, I>::indices(self);
 
             if request.generate_normals {
                 let normals = if request.orientation.is_left() {
-                    vec!([zero, zero, -one])
+                    vec!([zero(), zero(), -C::one()])
                 } else {
-                    vec!([zero, zero, one])
+                    vec!([zero(), zero(), one()])
                 };
 
                 Shape::with_normals(vertices, normals, indices)
@@ -100,9 +66,6 @@ where
 #[cfg(test)]
 mod tests {
     use super::{Polygon, Shape, Shaper};
-
-    use super::super::linear_algebra::magnitude_diff;
-    use super::super::unit_test::{distance_neighbour, epsilon_error};
 
     fn make_shape(size: u16) -> Shape<f64, u16> {
         Polygon::new(size).shape(Default::default()).expect("Panics occur before this call")
@@ -144,59 +107,5 @@ mod tests {
     #[test]
     fn max_sides() {
         make_shape(u16::MAX);
-    }
-
-    #[test]
-    fn side_length_odd() {
-        let shape = make_shape(11);
-        let vertices = shape.vertices();
-
-        distance_neighbour(1., vertices, 1, 0);
-        for i in 2..vertices.len() {
-            distance_neighbour(1., vertices, i, i-2);
-        }
-        distance_neighbour(1., vertices, vertices.len()-1, vertices.len()-2);
-    }
-
-    #[test]
-    fn error_total_odd() {
-        let shape = make_shape(32773);
-        let vertices = shape.vertices();
-
-        let mut error = 0.;
-        error += 1. - magnitude_diff(vertices[1], vertices[0]);
-        for i in 2..vertices.len() {
-            error += 1. - magnitude_diff(vertices[i], vertices[i-2]);
-        }
-        error += 1. - magnitude_diff(vertices[vertices.len()-1], vertices[vertices.len()-2]);
-
-        epsilon_error(error);
-    }
-
-    #[test]
-    fn side_length_even() {
-        let shape = make_shape(10);
-        let vertices = shape.vertices();
-
-        distance_neighbour(1., vertices, 1, 0);
-        for i in 2..vertices.len() {
-            distance_neighbour(1., vertices, i, i-2);
-        }
-        distance_neighbour(1., vertices, vertices.len()-1, vertices.len()-2);
-    }
-
-    #[test]
-    fn error_total_even() {
-        let shape = make_shape(32768);
-        let vertices = shape.vertices();
-
-        let mut error = 0.;
-        error += 1. - magnitude_diff(vertices[1], vertices[0]);
-        for i in 2..vertices.len() {
-            error += 1. - magnitude_diff(vertices[i], vertices[i-2]);
-        }
-        error += 1. - magnitude_diff(vertices[vertices.len()-1], vertices[vertices.len()-2]);
-
-        epsilon_error(error);
     }
 }
