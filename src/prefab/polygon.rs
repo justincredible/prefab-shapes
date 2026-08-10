@@ -8,7 +8,7 @@ use crate::shapes::{Configuration, Shape, Shaper, ShapingError};
 /// Regular polygons with less than 65536 sides.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Polygon {
-    sides: u16
+    pub(super) sides: u16
 }
 
 impl Polygon {

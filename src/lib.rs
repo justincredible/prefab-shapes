@@ -5,4 +5,5 @@ pub use prefab::{
     kepler_poinsot,
     platonic_solid,
     polygon,
+    pyramid,
 };
