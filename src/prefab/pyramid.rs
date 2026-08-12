@@ -92,9 +92,9 @@ where
                 [zero(), zero(), one()]
             };
             let polygonal_triangles = self.0.sides as usize - 2;
-            let mut normals = std::iter::repeat(base).take(polygonal_triangles).collect::<Vec<_>>();
+            let mut normals = std::iter::repeat_n(base, polygonal_triangles).collect::<Vec<_>>();
             for triple in indices.chunks(3).skip(polygonal_triangles) {
-                let face = triple.into_iter().map(|&i| i.to_usize().unwrap()).collect::<Vec<_>>();
+                let face = triple.iter().map(|i| i.to_usize().unwrap()).collect::<Vec<_>>();
                 let (normal, _triangle) = oriented_plane(&vertices, &face, request.orientation);
                 normals.push(normal);
             }
