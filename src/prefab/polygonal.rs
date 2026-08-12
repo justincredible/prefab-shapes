@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn error_total_odd() {
-        let shape = make_shape(32773);
+        let shape = make_shape(u16::MAX - 2);
         let vertices = shape.vertices();
 
         let mut error = 0.;
@@ -150,7 +150,7 @@ mod tests {
 
     #[test]
     fn error_total_even() {
-        let shape = make_shape(32768);
+        let shape = make_shape(u16::MAX - 9);
         let vertices = shape.vertices();
 
         let mut error = 0.;
