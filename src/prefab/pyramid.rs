@@ -165,7 +165,7 @@ mod tests {
 
     #[test]
     fn right_center_error_total_odd() {
-        let shape = make_shape(32773);
+        let shape = make_shape(u16::MAX);
         let vertices = shape.vertices();
         let distance = magnitude_diff(vertices[0], vertices[vertices.len() - 1]);
 
@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn right_center_error_total_even() {
-        let shape = make_shape(32768);
+        let shape = make_shape(u16::MAX - 3);
         let vertices = shape.vertices();
         let distance = magnitude_diff(vertices[0], vertices[vertices.len() - 1]);
 
@@ -214,8 +214,23 @@ mod tests {
     }
 
     #[test]
-    fn right_diameter_error_total() {
-        let shape = make_shape(u16::MAX / 2);
+    fn right_diameter_error_total_odd() {
+        let shape = make_shape(u16::MAX);
+        let vertices = shape.vertices();
+
+        let mut error = 0.;
+        for i in 0..vertices.len() / 2 {
+            let a = vertices[i];
+            let b = vertices[vertices.len() - 1 - i];
+            error += a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        }
+
+        epsilon_error(error);
+    }
+
+    #[test]
+    fn right_diameter_error_total_even() {
+        let shape = make_shape(u16::MAX - 3);
         let vertices = shape.vertices();
 
         let mut error = 0.;
