@@ -60,7 +60,7 @@ pub fn process_event(event: Event, raw_input: &mut egui::RawInput, state: &mut s
                 Keycode::Up => match state.shape {
                     1 | 3 => state.shape = 2,
                     2 | 5 => state.shape = 4,
-                    0 | 10 => {
+                    0 | 10 ..= 11 => {
                         state.sides = (state.sides + 1).min(255);
                         state.reset_polygon = true;
                     },
@@ -69,7 +69,7 @@ pub fn process_event(event: Event, raw_input: &mut egui::RawInput, state: &mut s
                 Keycode::Down => match state.shape {
                     4 => state.shape = 2,
                     2 => state.shape = 1,
-                    0 | 10 => {
+                    0 | 10 ..= 11 => {
                         if state.sides > 3 {
                             state.sides -= 1;
                         }
@@ -78,6 +78,8 @@ pub fn process_event(event: Event, raw_input: &mut egui::RawInput, state: &mut s
                     _ => (),
                 },
                 Keycode::Left => match state.shape {
+                    11 => state.shape = 10,
+                    10 => state.shape = 0,
                     9 => state.shape = 8,
                     8 => state.shape = 7,
                     7 => state.shape = 6,
@@ -91,10 +93,12 @@ pub fn process_event(event: Event, raw_input: &mut egui::RawInput, state: &mut s
                     6 => state.shape = 7,
                     7 => state.shape = 8,
                     8 => state.shape = 9,
+                    0 => state.shape = 10,
+                    10 => state.shape = 11,
                     _ => (),
                 },
                 Keycode::G => match state.shape {
-                    0 | 10 => {
+                    0 | 10 ..= 11 => {
                         state.sides = 3;
                         state.reset_polygon = true;
                         state.shape = 5;
@@ -275,7 +279,7 @@ pub fn run_ui(ctx: &egui::Context, raw_input: egui::RawInput, state: &mut super:
                     }
                     ui.add_space(SPACER);
                     match state.shape {
-                        0 | 10 => {
+                        0 | 10 ..= 11 => {
                             ui.label("Polygon Shape");
                             ui.horizontal(|ui| {
                                 ui.add_space(4. * SPACER);
@@ -283,6 +287,7 @@ pub fn run_ui(ctx: &egui::Context, raw_input: egui::RawInput, state: &mut super:
                                     .show_ui(ui, |ui| {
                                         ui.selectable_value(&mut state.shape, 0, "Flat");
                                         ui.selectable_value(&mut state.shape, 10, "Pyramid");
+                                        ui.selectable_value(&mut state.shape, 11, "Wedge");
                                     });
                             });
                             ui.add_space(SPACER);
@@ -293,7 +298,7 @@ pub fn run_ui(ctx: &egui::Context, raw_input: egui::RawInput, state: &mut super:
                                 state.reset_polygon = true;
                             });
                         },
-                        1..=5 => {
+                        1 ..= 5 => {
                             ui.label("Platonic Solid");
                             ui.horizontal(|ui| {
                                 ui.add_space(4. * SPACER);
@@ -307,7 +312,7 @@ pub fn run_ui(ctx: &egui::Context, raw_input: egui::RawInput, state: &mut super:
                                     });
                             });
                         },
-                        6..=9 => {
+                        6 ..= 9 => {
                             ui.label("Kepler-Poinsot Polyhedron");
                             ui.horizontal(|ui| {
                                 ui.add_space(4. * SPACER);
