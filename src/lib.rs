@@ -6,4 +6,5 @@ pub use prefab::{
     platonic_solid,
     polygon,
     pyramid,
+    wedge,
 };

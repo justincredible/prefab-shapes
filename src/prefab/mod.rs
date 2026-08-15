@@ -8,3 +8,4 @@ mod polyhedral;
 pub mod pyramid;
 #[allow(unused)]
 mod unit_test;
+pub mod wedge;

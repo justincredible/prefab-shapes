@@ -9,6 +9,7 @@ use prefab_shapes::kepler_poinsot::KpPolyhedron;
 use prefab_shapes::platonic_solid::PlatonicSolid;
 use prefab_shapes::polygon::Polygon;
 use prefab_shapes::pyramid::Pyramid;
+use prefab_shapes::wedge::Wedge;
 use prefab_shapes::Shaper;
 use prefab_shapes::shapes::ShapingError;
 
@@ -73,6 +74,7 @@ fn main() -> Result<(), ShapingError> {
         Shape::new(&gl, KpPolyhedron::GreatStellatedDodecahedron.shape(config)?),
         Shape::new(&gl, KpPolyhedron::GreatIcosahedron.shape(config)?),
         Shape::new(&gl, Pyramid::new(state.sides).shape(config)?),
+        Shape::new(&gl, Wedge::new(state.sides).shape(config)?),
     ];
 
     let rh_cross = config.orientation.is_ccw() && config.orientation.is_right()
@@ -113,6 +115,7 @@ fn main() -> Result<(), ShapingError> {
         if state.reset_polygon {
             shapes[0] = Shape::new(&gl, Polygon::new(state.sides).shape(config)?);
             shapes[10] = Shape::new(&gl, Pyramid::new(state.sides).shape(config)?);
+            shapes[11] = Shape::new(&gl, Wedge::new(state.sides).shape(config)?);
             state.reset_polygon = false;
         }
 
@@ -120,7 +123,7 @@ fn main() -> Result<(), ShapingError> {
             state.rotation *= state.rotation_delta;
         }
 
-        let scale = Vec3::ONE * if state.shape == 0 || state.shape == 10 {
+        let scale = Vec3::ONE * if state.shape == 0 || state.shape == 10 || state.shape == 11 {
             let angle = consts::TAU / state.sides as f32;
             f32::sin(angle) / f32::cos(0.5 * angle)
         } else if state.shape == 4 || state.shape == 8 {
