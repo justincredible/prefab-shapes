@@ -77,16 +77,18 @@ where
             }
         }
 
-        let i = vec![zero(), one()]
-            .into_iter()
-            .chain((2..vertices.len()).map(|i| cast::<_, I>(i).unwrap()))
-            .collect::<Vec<_>>();
+        let mut i = Vec::with_capacity(vertices.len());
+        i.push(zero());
+        i.push(one());
+        for index in 2..vertices.len() {
+            i.push(cast::<_, I>(index).ok_or(ShapingError::IndexOverflow)?);
+        }
 
         if request.prefer_strips && let Some(index_strips) = self.strips() {
-            let lookup = |idx| if request.orientation.is_ccw() {
-                i[idx]
+            let lookup = |index| if request.orientation.is_ccw() {
+                i[index]
             } else {
-                i[self.vertex_count() - 1 - idx]
+                i[self.vertex_count() - 1 - index]
             };
             let mut strips = vec![];
             for strip in index_strips {

@@ -63,10 +63,12 @@ where
         }
 
         let mut indices = Polygonal::<C, I>::indices(self);
-        let i = vec![zero(), one()]
-            .into_iter()
-            .chain((2..vertices.len()).map(|i| cast::<_, I>(i).unwrap()))
-            .collect::<Vec<_>>();
+        let mut i = Vec::with_capacity(vertices.len());
+        i.push(zero());
+        i.push(one());
+        for index in 2..vertices.len() {
+            i.push(cast::<_, I>(index).ok_or(ShapingError::IndexOverflow)?);
+        }
         let ordered_orientation = right_left != request.orientation.is_ccw();
         if !self.0.sides.is_multiple_of(2) {
             indices.push(i[1]);

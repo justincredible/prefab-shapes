@@ -98,12 +98,12 @@ where
                     normal_index += 1;
                 }
 
-                let usz_idx = cast::<I, usize>(*index).unwrap();
-                let key = (usz_idx, normal_index);
+                let usize_index = index.to_usize().unwrap();
+                let key = (usize_index, normal_index);
                 if let Entry::Vacant(e) = map.entry(key) {
                     e.insert(vertices.len());
                     vertices.push(NormalVertex {
-                        position: self.vertices()[usz_idx],
+                        position: self.vertices()[usize_index],
                         normal: self.normals()[normal_index],
                     });
                 }
@@ -124,7 +124,7 @@ where
         self.indices()
             .into_iter()
             .flat_map(|indexes| indexes.iter())
-            .map(|&i| cast::<I, usize>(i).unwrap())
+            .map(|i| i.to_usize().unwrap())
             .collect::<Vec<_>>()
             .into_iter()
             .filter(|&i| i >= vertex_count)
