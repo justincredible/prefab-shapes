@@ -67,9 +67,9 @@ where
     fn indices(&self) -> Vec<I> {
         let mut indices = Vec::with_capacity(3 * (self.sides() as usize - 2));
 
-        let mut a= zero();
+        let mut a = zero();
         let mut b = I::one();
-        let mut c = cast::<_, I>(2).unwrap();
+        let mut c = b + b;
         let inc = b;
 
         for i in 0..self.sides()-2 {
