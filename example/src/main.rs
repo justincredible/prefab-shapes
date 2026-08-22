@@ -8,6 +8,7 @@ use sdl2::surface::Surface;
 use prefab_shapes::kepler_poinsot::KpPolyhedron;
 use prefab_shapes::platonic_solid::PlatonicSolid;
 use prefab_shapes::polygon::Polygon;
+use prefab_shapes::prism::Prism;
 use prefab_shapes::pyramid::Pyramid;
 use prefab_shapes::wedge::Wedge;
 use prefab_shapes::Shaper;
@@ -75,6 +76,8 @@ fn main() -> Result<(), ShapingError> {
         Shape::new(&gl, KpPolyhedron::GreatIcosahedron.shape(config)?),
         Shape::new(&gl, Pyramid::new(state.sides).shape(config)?),
         Shape::new(&gl, Wedge::new(state.sides).shape(config)?),
+        Shape::new(&gl, Prism::new(state.sides, false).shape(config)?),
+        Shape::new(&gl, Prism::new(state.sides, true).shape(config)?),
     ];
 
     let rh_cross = config.orientation.is_ccw() && config.orientation.is_right()
@@ -116,6 +119,8 @@ fn main() -> Result<(), ShapingError> {
             shapes[0] = Shape::new(&gl, Polygon::new(state.sides).shape(config)?);
             shapes[10] = Shape::new(&gl, Pyramid::new(state.sides).shape(config)?);
             shapes[11] = Shape::new(&gl, Wedge::new(state.sides).shape(config)?);
+            shapes[12] = Shape::new(&gl, Prism::new(state.sides, false).shape(config)?);
+            shapes[13] = Shape::new(&gl, Prism::new(state.sides, true).shape(config)?);
             state.reset_polygon = false;
         }
 
@@ -124,10 +129,12 @@ fn main() -> Result<(), ShapingError> {
         }
 
         let scale = Vec3::ONE * if state.shape == 0 || state.shape == 10 || state.shape == 11 {
-            let angle = consts::TAU / state.sides as f32;
-            f32::sin(angle) / f32::cos(0.5 * angle)
+            let sides = state.sides as f32;
+            f32::sin(consts::TAU / sides) / f32::cos(consts::PI / sides)
+        } else if state.shape == 12 || state.shape == 13 {
+            let sides = state.sides as f32;
+            0.75 * f32::sin(consts::TAU / sides) / f32::cos(consts::PI / sides)
         } else if state.shape == 4 || state.shape == 8 {
-            // the dodecahedron is rather large
             0.7
         } else {
             1.0
