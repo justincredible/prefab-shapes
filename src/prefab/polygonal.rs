@@ -18,9 +18,9 @@ where
     /// Center angle between two adjacent vertices.
     /// Returns the half and full angle respectively.
     fn angle(&self) -> (C, C) {
-        let angle = C::TAU() / cast::<_, C>(self.sides()).unwrap();
+        let sides = cast::<_, C>(self.sides()).unwrap();
 
-        (cast::<_, C>(0.5).unwrap() * angle, angle)
+        (C::PI() / sides, C::TAU() / sides)
     }
 
     /// Radius of the polygonal face with unit length edges.
