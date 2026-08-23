@@ -53,52 +53,37 @@ where
         vertices.push([zero(), zero(), apex]);
 
         let mut indices = Polygonal::<C, I>::indices(self);
-        let i = vec![zero(), one()]
-            .into_iter()
-            .chain((2..vertices.len()).map(|i| cast::<_, I>(i).unwrap()))
-            .collect::<Vec<_>>();
-        let ordered_orientation = right_left != request.orientation.is_ccw();
-        if ordered_orientation == self.0.sides.is_multiple_of(2) {
-            indices.push(i[0]);
-            indices.push(i[1]);
+        let mut i = Vec::with_capacity(vertices.len());
+        i.push(zero());
+        i.push(one());
+        for index in 2..vertices.len() {
+            i.push(cast::<_, I>(index).ok_or(ShapingError::IndexOverflow)?);
+        }
+
+        let base = if request.orientation.is_right() {
+            [zero(), zero(), -C::one()]
         } else {
-            indices.push(i[1]);
-            indices.push(i[0]);
+            [zero(), zero(), one()]
+        };
+        let sides = self.0.sides as usize;
+        let mut normals = std::iter::repeat_n(base, sides - 2).collect::<Vec<_>>();
+
+        let vector = [0, 1, sides];
+        let (normal, triangle) = oriented_plane(&vertices, &vector, request.orientation);
+        normals.push(normal);
+        triangle.into_iter().for_each(|index| indices.push(i[index]));
+        for vertex in 2..vertices.len() - 1 {
+            let vector = [vertex - 2, vertex, sides];
+            let (normal, triangle) = oriented_plane(&vertices, &vector, request.orientation);
+            normals.push(normal);
+            triangle.into_iter().for_each(|index| indices.push(i[index]));
         }
-        indices.push(i[self.0.sides as usize]);
-        for vertex_index in 2..vertices.len() - 1 {
-            if ordered_orientation == (self.0.sides as usize + vertex_index).is_multiple_of(2) {
-                indices.push(i[vertex_index]);
-                indices.push(i[vertex_index - 2]);
-            } else {
-                indices.push(i[vertex_index - 2]);
-                indices.push(i[vertex_index]);
-            }
-            indices.push(i[self.0.sides as usize]);
-        }
-        if ordered_orientation {
-            indices.push(i[vertices.len() - 2]);
-            indices.push(i[vertices.len() - 3]);
-        } else {
-            indices.push(i[vertices.len() - 3]);
-            indices.push(i[vertices.len() - 2]);
-        }
-        indices.push(i[self.0.sides as usize]);
+        let vector = [vertices.len() - 3, vertices.len() - 2, sides];
+        let (normal, triangle) = oriented_plane(&vertices, &vector, request.orientation);
+        normals.push(normal);
+        triangle.into_iter().for_each(|index| indices.push(i[index]));
 
         if request.generate_normals {
-            let base = if request.orientation.is_right() {
-                [zero(), zero(), -C::one()]
-            } else {
-                [zero(), zero(), one()]
-            };
-            let polygonal_triangles = self.0.sides as usize - 2;
-            let mut normals = std::iter::repeat_n(base, polygonal_triangles).collect::<Vec<_>>();
-            for triple in indices.chunks(3).skip(polygonal_triangles) {
-                let face = triple.iter().map(|i| i.to_usize().unwrap()).collect::<Vec<_>>();
-                let (normal, _triangle) = oriented_plane(&vertices, &face, request.orientation);
-                normals.push(normal);
-            }
-
             Shape::with_normals(vertices, normals, indices)
         } else {
             Shape::without_normals(vertices, indices)

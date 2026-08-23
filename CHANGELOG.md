@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Add prisms
 * Add wedges
 * Add pyramids
 * Add derived traits to `Polygon`.

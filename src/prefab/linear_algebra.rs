@@ -61,3 +61,14 @@ where C: Float
 {
     vertex[0] * vertex[0] + vertex[1] * vertex[1] + vertex[2] * vertex[2]
 }
+
+/// Rotates a vector around the Z axis.
+pub(super) fn rotation_z<C>(vertex: &mut [C; 3], angle: C)
+where C: Float
+{
+    let old_x = vertex[0];
+    let old_y = vertex[1];
+
+    vertex[0] = angle.cos() * old_x - angle.sin() * old_y;
+    vertex[1] = angle.sin() * old_x + angle.cos() * old_y;
+}

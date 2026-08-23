@@ -18,9 +18,9 @@ where
     /// Center angle between two adjacent vertices.
     /// Returns the half and full angle respectively.
     fn angle(&self) -> (C, C) {
-        let angle = C::TAU() / cast::<_, C>(self.sides()).unwrap();
+        let sides = cast::<_, C>(self.sides()).unwrap();
 
-        (cast::<_, C>(0.5).unwrap() * angle, angle)
+        (C::PI() / sides, C::TAU() / sides)
     }
 
     /// Radius of the polygonal face with unit length edges.
@@ -67,9 +67,9 @@ where
     fn indices(&self) -> Vec<I> {
         let mut indices = Vec::with_capacity(3 * (self.sides() as usize - 2));
 
-        let mut a= zero();
+        let mut a = zero();
         let mut b = I::one();
-        let mut c = cast::<_, I>(2).unwrap();
+        let mut c = b + b;
         let inc = b;
 
         for i in 0..self.sides()-2 {
