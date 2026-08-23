@@ -116,11 +116,21 @@ fn main() -> Result<(), ShapingError> {
         }
 
         if state.reset_polygon {
-            shapes[0] = Shape::new(&gl, Polygon::new(state.sides).shape(config)?);
-            shapes[10] = Shape::new(&gl, Pyramid::new(state.sides).shape(config)?);
-            shapes[11] = Shape::new(&gl, Wedge::new(state.sides).shape(config)?);
-            shapes[12] = Shape::new(&gl, Prism::new(state.sides, false).shape(config)?);
-            shapes[13] = Shape::new(&gl, Prism::new(state.sides, true).shape(config)?);
+            if let Ok(shape) = Polygon::new(state.sides).shape(config) {
+                shapes[0] = Shape::new(&gl, shape);
+            }
+            if let Ok(shape) = Pyramid::new(state.sides).shape(config) {
+                shapes[10] = Shape::new(&gl, shape);
+            }
+            if let Ok(shape) = Wedge::new(state.sides).shape(config) {
+                shapes[11] = Shape::new(&gl, shape);
+            }
+            if let Ok(shape) = Prism::new(state.sides, false).shape(config) {
+                shapes[12] = Shape::new(&gl, shape);
+            }
+            if let Ok(shape) = Prism::new(state.sides, true).shape(config) {
+                shapes[13] = Shape::new(&gl, shape);
+            }
             state.reset_polygon = false;
         }
 
