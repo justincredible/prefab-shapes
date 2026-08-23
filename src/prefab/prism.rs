@@ -75,6 +75,7 @@ where
             vertex[2] += half_height;
             vertices.push(vertex);
         }
+
         let mut indices = Polygonal::<C, I>::indices(self);
         let sides = self.polygon.sides as usize;
         let base = cast::<_, I>(sides).ok_or(ShapingError::IndexOverflow)?;
@@ -110,7 +111,6 @@ where
         let (normal, triangle) = oriented_plane(&vertices, &vector, request.orientation);
         normals.push(normal);
         triangle.into_iter().for_each(|index| indices.push(i[index]));
-
         for vertex in 2..sides {
             let offset = if !sides.is_multiple_of(2) {
                 vertex - 1
@@ -128,7 +128,6 @@ where
             normals.push(normal);
             triangle.into_iter().for_each(|index| indices.push(i[index]));
         }
-
         let vector = [sides - 2, sides - 1, 2 * sides - 1 - offset];
         let (normal, triangle) = oriented_plane(&vertices, &vector, request.orientation);
         normals.push(normal);
