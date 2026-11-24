@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Fix boundary error in `Polygon`.
 * Add prisms
 * Add wedges
 * Add pyramids
