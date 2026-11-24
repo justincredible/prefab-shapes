@@ -3,9 +3,9 @@
 ## Unreleased
 
 * Fix boundary error in `Polygon`.
-* Add prisms
-* Add wedges
-* Add pyramids
+* Add prisms.
+* Add wedges.
+* Add pyramids.
 * Add derived traits to `Polygon`.
 
 ## 0.1.0 (2026-07-18)
