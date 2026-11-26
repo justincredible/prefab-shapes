@@ -190,6 +190,7 @@ mod tests {
 
     type Real = f64;
 
+    #[allow(clippy::approx_constant)]
     const PHI: Real = 1.618_033_988_749_895;
 
     fn make_shape(solid: KpPolyhedron) -> Shape<Real, u8> {
