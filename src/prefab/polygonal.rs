@@ -69,10 +69,12 @@ where
 
         let mut a = zero();
         let mut b = I::one();
-        let mut c = b + b;
+        let mut c = b;
         let inc = b;
 
         for i in 0..self.sides()-2 {
+            c += inc;
+
             indices.push(a);
             indices.push(b);
             indices.push(c);
@@ -82,7 +84,6 @@ where
             } else {
                 b = c;
             }
-            c += inc;
         }
 
         indices

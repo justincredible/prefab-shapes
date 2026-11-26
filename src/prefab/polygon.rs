@@ -90,18 +90,18 @@ mod tests {
 
     #[test]
     fn u8_max_sides() {
-        let _: Shape<f32, u8> = Polygon::new(255).shape(Default::default()).expect("Panics occur before this call");
+        let _: Shape<f32, u8> = Polygon::new(256).shape(Default::default()).expect("Panics occur before this call");
     }
 
     #[test]
     #[should_panic]
     fn u8_overflow() {
-        let _: Shape<f32, u8> = Polygon::new(256).shape(Default::default()).expect("Panics occur before this call");
+        let _: Shape<f32, u8> = Polygon::new(257).shape(Default::default()).expect("Panics occur before this call");
     }
 
     #[test]
     fn u16_min_sides() {
-        let _: Shape<f32, u16> = Polygon::new(256).shape(Default::default()).expect("Panics occur before this call");
+        let _: Shape<f32, u16> = Polygon::new(257).shape(Default::default()).expect("Panics occur before this call");
     }
 
     #[test]

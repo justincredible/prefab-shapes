@@ -189,6 +189,7 @@ mod tests {
 
     type Real = f64;
 
+    #[allow(clippy::approx_constant)]
     const PHI: Real = 1.618_033_988_749_895;
     const DODECA_NEXTS: [[usize; 6]; 20] = [
         [3,4,6,7,10,11], [2,4,5,8,10,12], [1,3,5,9,11,13], [0,2,6,9,12,14], [0,1,7,8,13,14],
